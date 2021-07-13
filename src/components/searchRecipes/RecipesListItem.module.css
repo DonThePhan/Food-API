@@ -1,0 +1,67 @@
+img {
+	border-radius: 10px;
+	width: 300px;
+	height: 300px;
+}
+
+/* Grid View --------------------------------- */
+.itemGridView {
+	display: flex;
+	flex-direction: column;
+}
+.name {
+	text-align: center;
+	margin: 0;
+}
+
+/* List View --------------------------------- */
+
+.itemListView {
+    display: flex;
+	flex-direction: row;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.list h2 {
+    padding-left: 30px;
+}
+
+.infoAndIngredients {
+    display: flex;
+    flex-direction: row;
+    padding: 0 30px;
+}
+.ingredients {
+    width: 400px;
+}
+
+.ingredients p {
+    margin-left: 20px;
+}
+
+.info {
+	margin-left: 50px;
+}
+
+.info h3, .ingredients h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.ingredientTitle {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+.ingredientTitle p {
+    margin: 0 20px;
+    color: grey;
+}
+
+a {
+    text-decoration: none;
+}

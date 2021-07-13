@@ -1,0 +1,29 @@
+header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	background: #d54c4c;
+    align-items: baseline;
+}
+
+.logo {
+    margin-left: 20%;
+}
+.nav {
+    margin-right: 20%;
+}
+
+ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+}
+
+ul a {
+    margin: 5px 20px;
+    text-decoration: none;
+}
+
+.active {
+    font-weight: bold;
+}

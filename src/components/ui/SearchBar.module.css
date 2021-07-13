@@ -1,0 +1,71 @@
+.searchBarFind input {
+	border: none;
+	outline: none;
+}
+
+.searchBar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.searchBarFind {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.byCategory {
+	margin-right: 100px;
+}
+
+.inputSection {
+	border: 1px grey solid;
+	border-radius: 50vh;
+	padding: 0 10px;
+}
+
+.view {
+	margin: 10px;
+}
+
+button {
+	background-color: transparent;
+	border: none;
+	padding: 10px;
+	cursor: pointer;
+}
+
+form {
+	margin: 10px 20px 0;
+}
+
+.viewSelected {
+	background: lightgrey;
+}
+
+.advancedSearch {
+	display: flex;
+	flex-direction: row;
+	animation: advancedSearchBarFadeIn .5s;
+}
+
+@keyframes advancedSearchBarFadeIn {
+	from {
+		opacity: 0;
+		margin-top: -10px;
+	}
+	to {
+		opacity: 1;
+		margin-top: 0;
+	}
+}
+
+select {
+	margin: 5px;
+}
+
+.calories {
+    display: flex;
+    flex-direction: column;
+}
