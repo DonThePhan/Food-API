@@ -1,23 +1,28 @@
 import classes from './SearchBar.module.css';
-import LoadingSpinner from './LoadingSpinner';
 import { Fragment, useContext, useState, useEffect } from 'react';
 import SearchContext from '../../store/search-context';
+import Selector from './Selector';
+import RangeSelector from './RangeSelector';
+import _ from 'lodash';
 
 function SearchBar(props) {
 	const { buttonText } = props;
 	const {
-		searching,
 		setSearching,
 		searchQuery,
 		setSearchQuery,
 		view,
 		setView,
-		advancedSearchOptions,
-		setAdvancedSearchOptions
+		setAdvancedSearchOptions,
+		filterItems,
+		filterRangedItems
 	} = useContext(SearchContext);
 
 	const [ advancedSearchOn, setAdvancedSearchOn ] = useState(false);
-	const [ calories, setCalories ] = useState({ min: false, max: false, text: false });
+	const [ rangeItems, setRangeItems ] = useState({
+		calories: { min: false, max: false, text: false },
+		time: { min: false, max: false, text: false }
+	});
 
 	function submitHandler(e) {
 		e.preventDefault();
@@ -29,260 +34,163 @@ function SearchBar(props) {
 	}
 
 	function toogleAdvancedSearch() {
-		setAdvancedSearchOn((prev) => !prev);
+		setAdvancedSearchOn((prev) => {
+			if (!prev === false) {
+				resetSearchOptions();
+			}
+			return !prev;
+		});
 	}
 
 	function advancedOptHandler(e) {
 		if (e.target.value === 'none') {
 			setAdvancedSearchOptions((prev) => {
 				const newValue = { ...prev };
-				delete newValue[e.target.name];
+				delete newValue[_.camelCase(e.target.name)];
 				return newValue;
 			});
 		} else {
 			setAdvancedSearchOptions((prev) => {
-				return { ...prev, [e.target.name]: e.target.value };
+				return { ...prev, [_.camelCase(e.target.name)]: e.target.value };
 			});
 		}
 	}
 
-	function calorieChange(e) {
+	//* RANGED FILTERS - START ----------------------------------------------------------------------
+
+	function rangeItemChange(e, category) {
 		if (e.target.name === 'min') {
-			setCalories((prev) => {
-				return { ...prev, min: e.target.value };
+			setRangeItems((prev) => {
+				return { ...prev, [category]: { ...prev[category], min: e.target.value } };
 			});
 		} else {
-			setCalories((prev) => {
-				return { ...prev, max: e.target.value };
+			setRangeItems((prev) => {
+				return { ...prev, [category]: { ...prev[category], max: e.target.value } };
 			});
 		}
 	}
 
+	//Everytime a Ranged min/max value updates, update the respective text
 	useEffect(
 		() => {
-			if (calories.min && calories.max) {
-				setCalories((prev) => {
-					return { ...prev, text: `${calories.min}-${calories.max}` };
-				});
-			} else if (calories.min && !calories.max) {
-				setCalories((prev) => {
-					return { ...prev, text: `${calories.min}+` };
-				});
-			} else if (!calories.min && calories.max) {
-				setCalories((prev) => {
-					return { ...prev, text: `0-${calories.max}` };
-				});
-			} else if (!calories.min && !calories.max) {
-				setCalories((prev) => {
-					return { ...prev, text: false };
-				});
+			for (const [ key, value ] of Object.entries(rangeItems)) {
+				if (value.min && value.max) {
+					setRangeItems((prev) => {
+						return { ...prev, [key]: { ...value, text: `${value.min}-${value.max}` } };
+					});
+				} else if (value.min && !value.max) {
+					setRangeItems((prev) => {
+						return { ...prev, [key]: { ...value, text: `${value.min}+` } };
+					});
+				} else if (!value.min && value.max) {
+					setRangeItems((prev) => {
+						return { ...prev, [key]: { ...value, text: `0-${value.max}` } };
+					});
+				} else if (!value.min && !value.max) {
+					setRangeItems((prev) => {
+						return { ...prev, [key]: { ...value, text: false } };
+					});
+				}
 			}
 		},
-		[ calories.min, calories.max ]
+		// [ rangeItems.calories.min, rangeItems.calories.max, rangeItems.time.min, rangeItems.time.max ] //hard coded version
+		[
+			...Object.keys(rangeItems).map((key) => rangeItems[key].min),
+			...Object.keys(rangeItems).map((key) => rangeItems[key].max),
+		]
 	);
 
+	//Update advancedSearchOptions when text in a Ranged Filter updates
 	useEffect(
 		() => {
-			if (calories.text) {
-				setAdvancedSearchOptions((prev) => {
-					return { ...prev, calories: calories.text };
-				});
-			} else {
-				setAdvancedSearchOptions((prev) => {
-					const newValue = { ...prev };
-					delete newValue['calories'];
-					return newValue;
-				});
+			for (const [ key, value ] of Object.entries(rangeItems)) {
+				if (value.text) {
+					setAdvancedSearchOptions((prev) => {
+						return { ...prev, [key]: value.text };
+					});
+				} else {
+					setAdvancedSearchOptions((prev) => {
+						const newValue = { ...prev };
+						delete newValue[key];
+						return newValue;
+					});
+				}
 			}
 		},
-		[ calories.text ]
+		// [rangeItems.calories.text, rangeItems.time.text, setAdvancedSearchOptions] //hard coded version
+		[ ...Object.keys(rangeItems).map((key) => rangeItems[key].text), setAdvancedSearchOptions ]
 	);
+
+	//* RANGED FILTERS - END ----------------------------------------------------------------------
 
 	function resetSearchOptions() {
 		setAdvancedSearchOptions({});
-		console.log(advancedSearchOptions);
+		setRangeItems({
+			calories: { min: false, max: false, text: false },
+			time: { min: false, max: false, text: false }
+		});
 	}
 
 	return (
 		<Fragment>
-			{searching && <LoadingSpinner />}
-			{!searching && (
-				<div className={classes.searchBar}>
-					<div className={classes.searchBarFind}>
-						<form onSubmit={submitHandler} className={classes.inputSection}>
-							<div>
-								<input
-									onChange={searchInputChangeHandler}
-									placeholder={buttonText}
-									id="search"
-									type="text"
-									value={searchQuery}
-								/>
-								<button type="submit">
-									<i className="fas fa-search" />
-								</button>
-							</div>
-						</form>
-						<div className={classes.view}>
-							<button
-								className={view === 'grid' ? classes.viewSelected : ''}
-								onClick={() => setView('grid')}
-							>
-								<i className="fas fa-th-large" />
-							</button>
-							<button
-								className={view === 'list' ? classes.viewSelected : ''}
-								onClick={() => setView('list')}
-							>
-								<i className="fas fa-bars" />
+			<div className={classes.searchBar}>
+				<div className={classes.searchBarFind}>
+					<form onSubmit={submitHandler} className={classes.inputSection}>
+						<div>
+							<input
+								onChange={searchInputChangeHandler}
+								placeholder={buttonText}
+								id="search"
+								type="text"
+								value={searchQuery}
+							/>
+							<button type="submit">
+								<i className="fas fa-search" />
 							</button>
 						</div>
+					</form>
+					<div className={classes.view}>
+						<button className={view === 'grid' ? classes.viewSelected : ''} onClick={() => setView('grid')}>
+							<i className="fas fa-th-large" />
+						</button>
+						<button className={view === 'list' ? classes.viewSelected : ''} onClick={() => setView('list')}>
+							<i className="fas fa-bars" />
+						</button>
 					</div>
-					<button onClick={toogleAdvancedSearch} className={classes.byCategory}>
-						By Category{' '}
-						{!advancedSearchOn ? <i className="fas fa-caret-down" /> : <i className="fas fa-caret-up" />}
-					</button>
-					{advancedSearchOn && (
-						<div className={classes.advancedSearch}>
-							<button onClick={resetSearchOptions}>reset search options</button>
-							<select
-								defaultValue={advancedSearchOptions.diet}
-								onClick={advancedOptHandler}
-								name="diet"
-								id="diet"
-							>
-								<option value="none">Diet</option>
-								<option value="balanced">balanced</option>
-								<option value="high-fiber">high-fiber</option>
-								<option value="high-protein">high-protein</option>
-								<option value="low-carb">low-carb</option>
-								<option value="low-fat">low-fat</option>
-								<option value="low-sodium">low-sodium</option>
-							</select>
-							<select
-								defaultValue={advancedSearchOptions.health}
-								onClick={advancedOptHandler}
-								name="health"
-								id="health"
-							>
-								<option value="none">Health</option>
-								<option value="alcohol-free">alcohol-free</option>
-								<option value="celery-free">celery-free</option>
-								<option value="crustacean-free">crustacean-free</option>
-								<option value="dairy-free">dairy-free</option>
-								<option value="egg-free">egg-free</option>
-								<option value="fodmap-free">fodmap-free</option>
-								<option value="gluten-free">gluten-free</option>
-								<option value="immuno-supportive">immuno-supportive</option>
-								<option value="keto-friendly">keto-friendly</option>
-								<option value="kosher">kosher</option>
-								<option value="low-fat-abs">low-fat-abs</option>
-								<option value="low-potassium">low-potassium</option>
-								<option value="low-sugar">low-sugar</option>
-								<option value="low-sugar">low-sugar</option>
-								<option value="lupine-free">lupine-free</option>
-								<option value="mustard-free">mustard-free</option>
-								<option value="no-oil-added">no-oil-added</option>
-								<option value="paleo">paleo</option>
-								<option value="peanut-free">peanut-free</option>
-								<option value="pecatarian">pecatarian</option>
-								<option value="pork-free">pork-free</option>
-								<option value="red-meat-free">red-meat-free</option>
-								<option value="sesame-free">sesame-free</option>
-								<option value="shellfish-free">shellfish-free</option>
-								<option value="soy-free">soy-free</option>
-								<option value="sugar-conscious">sugar-conscious</option>
-								<option value="tree-nut-free">tree-nut-free</option>
-								<option value="vegan">vegan</option>
-								<option value="vegetarian">vegetarian</option>
-								<option value="wheat-free">wheat-free</option>
-							</select>
-							<select
-								defaultValue={advancedSearchOptions.cuisineType}
-								onClick={advancedOptHandler}
-								name="cuisineType"
-								id="cuisineType"
-							>
-								<option value="none">Cuisine Type</option>
-								<option value="American">American</option>
-								<option value="Asian">Asian</option>
-								<option value="British">British</option>
-								<option value="Caribbean">Caribbean</option>
-								<option value="Central Europe">Central Europe</option>
-								<option value="Chinese">Chinese</option>
-								<option value="Eastern Europe">Eastern Europe</option>
-								<option value="French">French</option>
-								<option value="Indian">Indian</option>
-								<option value="Italian">Italian</option>
-								<option value="Japanese">Japanese</option>
-								<option value="Kosher">Kosher</option>
-								<option value="Mediterranean">Mediterranean</option>
-								<option value="Mexican">Mexican</option>
-								<option value="Middle Eastern">Middle Eastern</option>
-								<option value="Nordic">Nordic</option>
-								<option value="South American">South American</option>
-								<option value="South East Asian">South East Asian</option>
-							</select>
-							<select
-								defaultValue={advancedSearchOptions.mealType}
-								onClick={advancedOptHandler}
-								name="mealType"
-								id="mealType"
-							>
-								<option value="none">Meal Type</option>
-								<option value="Breakfast">Breakfast</option>
-								<option value="Dinner">Dinner</option>
-								<option value="Lunch">Lunch</option>
-								<option value="Snack">Snack</option>
-								<option value="Teatime">Teatime</option>
-							</select>
-							<select
-								defaultValue={advancedSearchOptions.dishType}
-								onClick={advancedOptHandler}
-								name="dishType"
-								id="dishType"
-							>
-								<option value="none">Dish Type</option>
-								<option value="Biscuits and cookies">Biscuits and cookies</option>
-								<option value="Bread">Bread</option>
-								<option value="Cereals">Cereals</option>
-								<option value="Condiments and sauces">Condiments and sauces</option>
-								<option value="Desserts">Desserts</option>
-								<option value="Drinks">Drinks</option>
-								<option value="Main course">Main course</option>
-								<option value="Pancake">Pancake</option>
-								<option value="Preps">Preps</option>
-								<option value="Preserve">Preserve</option>
-								<option value="Salad">Salad</option>
-								<option value="Sandwiches">Sandwiches</option>
-								<option value="Side dish">Side dish</option>
-								<option value="Soup">Soup</option>
-								<option value="Starter">Starter</option>
-								<option value="Sweets">Sweets</option>
-							</select>
-							<div className={classes.calories}>
-								<p>Calories</p>
-								<input
-									value={calories.min}
-									onChange={calorieChange}
-									name="min"
-									type="number"
-									min="0"
-									placeholder="Min"
-								/>
-								<input
-									value={calories.max}
-									onChange={calorieChange}
-									name="max"
-									type="number"
-									min="0"
-									placeholder="Max"
-								/>
-							</div>
-						</div>
-					)}
 				</div>
-			)}
+				<button onClick={toogleAdvancedSearch} className={classes.filter}>
+					Filter {!advancedSearchOn ? <i className="fas fa-caret-down" /> : <i className="fas fa-caret-up" />}
+				</button>
+				{advancedSearchOn && (
+					<div className={classes.advancedSearch}>
+						<button onClick={resetSearchOptions}>reset filter</button>
+						{Object.keys(filterItems).map(function(key) {
+							return (
+								<Selector
+									className={classes.categoryWrapper}
+									key={key}
+									keyValue={key}
+									values={filterItems[key]}
+									advancedOptHandler={advancedOptHandler}
+								/>
+							);
+						})}
+						{Object.keys(filterRangedItems).map(function(key) {
+							return (
+								<RangeSelector
+									className={classes.categoryWrapper}
+									key={key}
+									name={key}
+									label={filterRangedItems[key]}
+									min={rangeItems[key].min}
+									max={rangeItems[key].max}
+									rangeItemChange={rangeItemChange}
+								/>
+							);
+						})}
+					</div>
+				)}
+			</div>
 		</Fragment>
 	);
 }

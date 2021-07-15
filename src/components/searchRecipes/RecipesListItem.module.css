@@ -1,7 +1,33 @@
-img {
-	border-radius: 10px;
-	width: 300px;
+.imgContainer {
+    position: relative;
+    min-width: 300px;
+    max-width: 300px;
 	height: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: transparent;
+    transition: .5s;
+}
+
+.imgContainer h1 {
+    text-align: center;
+    z-index: 10;
+}
+
+.imgContainer:hover {
+    color: white;
+    text-shadow: 5px 5px 5px black;
+}
+
+
+img {
+    position: absolute;
+	border-radius: 10px;
+	width: 100%;
+	height: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 /* Grid View --------------------------------- */
@@ -9,9 +35,17 @@ img {
 	display: flex;
 	flex-direction: column;
 }
+
+.gridLableHolder {
+    position: relative;
+}
+
 .name {
-	text-align: center;
-	margin: 0;
+    text-align: center;
+    transition: .25s;
+}
+.nameHover {
+    color: transparent;
 }
 
 /* List View --------------------------------- */

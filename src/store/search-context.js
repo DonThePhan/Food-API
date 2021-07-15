@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react';
+import filterItems, { filterRangedItems} from './filterItems';
 
 const SearchContext = createContext({
 	searchRecipeResults: [],
@@ -10,7 +11,9 @@ const SearchContext = createContext({
 	view: 'grid',
 	setView: () => {},
 	advancedSearchOptions: {},
-	setAdvancedSearchOptions: () => {}
+	setAdvancedSearchOptions: () => {},
+    filterItems: {},
+    filterRangedItems:{}
 });
 
 export function SearchProvider(props) {
@@ -32,7 +35,9 @@ export function SearchProvider(props) {
 				view,
 				setView,
 				advancedSearchOptions,
-				setAdvancedSearchOptions
+				setAdvancedSearchOptions,
+                filterItems,
+                filterRangedItems
 			}}
 		>
 			{props.children}

@@ -1,0 +1,83 @@
+const filterItems = {
+	diet: [ 'none', 'balanced', 'high-fiber', 'high-protein', 'low-carb', 'low-fat', 'low-sodium' ],
+	health: [
+		'none',
+		'alcohol-free',
+		'celery-free',
+		'crustacean-free',
+		'dairy-free',
+		'egg-free',
+		'fodmap-free',
+		'gluten-free',
+		'immuno-supportive',
+		'keto-friendly',
+		'kosher',
+		'low-fat-abs',
+		'low-potassium',
+		'low-sugar',
+		'lupine-free',
+		'mustard-free',
+		'no-oil-added',
+		'paleo',
+		'peanut-free',
+		'pescatarian',
+		'pork-free',
+		'red-meat-free',
+		'sesame-free',
+		'shellfish-free',
+		'soy-free',
+		'sugar-conscious',
+		'tree-nut-free',
+		'vegan',
+		'vegetarian',
+		'wheat-free'
+	],
+	'cuisine type': [
+		'none',
+		'American',
+		'Asian',
+		'British',
+		'Caribbean',
+		'Central Europe',
+		'Chinese',
+		'Eastern Europe',
+		'French',
+		'Indian',
+		'Italian',
+		'Japanese',
+		'Kosher',
+		'Mediterranean',
+		'Mexican',
+		'Middle Eastern',
+		'Nordic',
+		'South American',
+		'South East Asian'
+	],
+	'meal type': [ 'none', 'Breakfast', 'Dinner', 'Lunch', 'Snack', 'Teatime' ],
+	'dish type': [
+		'none',
+		'Biscuits and cookies',
+		'Bread',
+		'Cereals',
+		'Condiments and sauces',
+		'Desserts',
+		'Drinks',
+		'Main course',
+		'Pancake',
+		'Preps',
+		'Preserve',
+		'Salad',
+		'Sandwiches',
+		'Side dish',
+		'Soup',
+		'Starter',
+		'Sweets'
+	]
+};
+
+export const filterRangedItems = {
+    calories: 'Calories',
+    time: 'Time (minutes)'
+}
+
+export default filterItems;

@@ -15,7 +15,7 @@
 	align-items: center;
 }
 
-.byCategory {
+.filter {
 	margin-right: 100px;
 }
 
@@ -61,11 +61,14 @@ form {
 	}
 }
 
-select {
+.categoryWrapper {
+	display: flex;
+	flex-direction: column;
 	margin: 5px;
 }
 
-.calories {
-    display: flex;
-    flex-direction: column;
+.categoryWrapper label {
+    font-size: .85rem;
+    font-weight: 300;
 }
+

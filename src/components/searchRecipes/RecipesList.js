@@ -3,6 +3,7 @@ import RecipesListItem from './RecipesListItem';
 import { Fragment } from 'react';
 import classes from './RecipesList.module.css';
 import SearchContext from '../../store/search-context';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
 function RecipesList() {
 	const {
@@ -12,8 +13,7 @@ function RecipesList() {
 		setSearchRecipeResults,
 		searchQuery,
 		view,
-        advancedSearchOptions,
-        setAdvancedSearchOptions
+		advancedSearchOptions
 	} = useContext(SearchContext);
 	const [ initialSearch, setInitialSearch ] = useState(false);
 
@@ -30,8 +30,8 @@ function RecipesList() {
 				q: searchQuery
 			};
 
-            Object.assign(preParams, advancedSearchOptions);
-            console.log(preParams);
+			Object.assign(preParams, advancedSearchOptions);
+			console.log(preParams);
 
 			const params = new URLSearchParams(preParams);
 
@@ -40,7 +40,7 @@ function RecipesList() {
 
 				const data = await response.json();
 				setSearchRecipeResults(data.hits);
-				// console.log(data.hits);
+				console.log(data.hits);
 			} catch (err) {
 				console.log(err.message);
 			}
@@ -54,7 +54,7 @@ function RecipesList() {
 		() => {
 			if (searching === true) {
 				setInitialSearch(true);
-                recipeSearch();
+				recipeSearch();
 			}
 		},
 		[ searching, recipeSearch, setInitialSearch ]
@@ -62,19 +62,22 @@ function RecipesList() {
 
 	return (
 		<Fragment>
+			{searching && <LoadingSpinner />}
 			{!searching &&
 			initialSearch && (
 				<div className={`${classes.recipes} ${view === 'grid' ? classes.gridView : classes.listView}`}>
-					{searchRecipeResults && searchRecipeResults.length > 0 &&
+					{searchRecipeResults &&
+						searchRecipeResults.length > 0 &&
 						!searching &&
 						searchRecipeResults.map((recipe, index) => (
 							<RecipesListItem className={classes.recipe} recipe={recipe.recipe} key={index} />
 						))}
 				</div>
 			)}
-			{searchRecipeResults && searchRecipeResults.length === 0 &&
+			{searchRecipeResults &&
+			searchRecipeResults.length === 0 &&
 			initialSearch &&
-			!searching && <h2>Sorry, no results came up. Try another key word</h2>}
+			!searching && <h2>Sorry, no results came up. Try modifying your search</h2>}
 		</Fragment>
 	);
 }

@@ -3,14 +3,27 @@ import classes from './RecipesListItem.module.css';
 import SearchContext from '../../store/search-context';
 
 function RecipesListItem(props) {
-	const { url, dietLabels, label, image, cuisineType, ingredientLines, calories, yield: serves } = props.recipe;
+	const {
+		url,
+		dietLabels,
+		label,
+		image,
+		cuisineType,
+		ingredientLines,
+		calories,
+		yield: serves,
+		totalTime
+	} = props.recipe;
 	const { view } = useContext(SearchContext);
 
 	return (
 		<Fragment>
 			<div>
 				<div className={`${view === 'grid' ? classes.itemGridView : classes.itemListView} ${props.className}`}>
-					<img src={image} alt="" />
+					<div className={classes.imgContainer}>
+						<img src={image} alt="" />
+						{view === 'grid' && <h1>{label}</h1>}
+					</div>
 
 					{view === 'grid' && (
 						<h2 className={classes.name}>{label.length < 20 ? label : `${label.slice(0, 20)}...`}</h2>
@@ -34,6 +47,7 @@ function RecipesListItem(props) {
 									{cuisineType && <p>{cuisineType}</p>}
 									<p>{dietLabels}</p>
 									<p>{Math.round(calories).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} cal</p>
+									<p>{Math.round(totalTime).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} min</p>
 								</div>
 							</div>
 						</div>

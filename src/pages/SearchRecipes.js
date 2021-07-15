@@ -3,6 +3,8 @@ import RecipesList from '../components/searchRecipes/RecipesList';
 import SearchBar from '../components/ui/SearchBar';
 
 function SearchRecipes() {
+
+
 	return (
 		<Fragment>
 			<SearchBar buttonText="Find Recipes" />
