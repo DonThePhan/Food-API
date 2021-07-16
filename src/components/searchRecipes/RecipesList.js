@@ -5,6 +5,10 @@ import classes from './RecipesList.module.css';
 import SearchContext from '../../store/search-context';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
+const apiId = '98943836';
+const apiKey = '0e65bcc0fbbd3f66f8c4e203e2e72310';
+const baseURL = 'https://api.edamam.com/api/recipes/v2';
+
 function RecipesList() {
 	const {
 		searching,
@@ -19,10 +23,6 @@ function RecipesList() {
 
 	const recipeSearch = useCallback(
 		async () => {
-			const apiId = '98943836';
-			const apiKey = '0e65bcc0fbbd3f66f8c4e203e2e72310';
-			const baseURL = 'https://api.edamam.com/api/recipes/v2';
-
 			const preParams = {
 				type: 'public',
 				app_id: apiId,
@@ -70,7 +70,12 @@ function RecipesList() {
 						searchRecipeResults.length > 0 &&
 						!searching &&
 						searchRecipeResults.map((recipe, index) => (
-							<RecipesListItem className={classes.recipe} recipe={recipe.recipe} key={index} />
+							<RecipesListItem
+								className={classes.recipe}
+								recipe={recipe.recipe}
+								recipeId={recipe._links.self.href.replace(`${baseURL}/`, '').split('?')[0]}
+								key={index}
+							/>
 						))}
 				</div>
 			)}

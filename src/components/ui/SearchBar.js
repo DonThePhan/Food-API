@@ -4,6 +4,16 @@ import SearchContext from '../../store/search-context';
 import Selector from './Selector';
 import RangeSelector from './RangeSelector';
 import _ from 'lodash';
+import { useLocation, useHistory } from 'react-router-dom';
+
+const serialize = function(obj) {
+	var str = [];
+	for (var p in obj)
+		if (obj.hasOwnProperty(p)) {
+			str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+		}
+	return str.join('&');
+};
 
 function SearchBar(props) {
 	const { buttonText } = props;
@@ -13,19 +23,52 @@ function SearchBar(props) {
 		setSearchQuery,
 		view,
 		setView,
+		advancedSearchOptions,
 		setAdvancedSearchOptions,
 		filterItems,
 		filterRangedItems
 	} = useContext(SearchContext);
 
 	const [ advancedSearchOn, setAdvancedSearchOn ] = useState(false);
-	const [ rangeItems, setRangeItems ] = useState({
-		calories: { min: false, max: false, text: false },
-		time: { min: false, max: false, text: false }
-	});
+	const setInitialRangedItems = (filterRangedItems) => {
+		let initialRangeItems = { ...filterRangedItems };
+		Object.keys(initialRangeItems).forEach(function(key) {
+			initialRangeItems[key] = { min: false, max: false, text: false };
+		});
+		return initialRangeItems;
+	};
+	const [ rangeItems, setRangeItems ] = useState(setInitialRangedItems(filterRangedItems));
 
+	//* ON LOAD, check query parameters & update seachQuery & advancedSearchOptions - START
+	const location = useLocation();
+	useEffect(
+		() => {
+			let search = location.search.substring(1);
+			if (search) {
+				let queryParams = JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g, '":"') + '"}', function(
+					key,
+					value
+				) {
+					return key === '' ? value : decodeURIComponent(value);
+				});
+
+				if (queryParams.q) {
+					setSearchQuery(queryParams.q);
+				}
+
+				setAdvancedSearchOptions(queryParams);
+				setSearching(true);
+			}
+		},
+		[ setSearchQuery, setAdvancedSearchOptions, setSearching, location.search ]
+	);
+	//! ON LOAD, check query parameters & update seachQuery & advancedSearchOptions - END
+
+	const history = useHistory();
 	function submitHandler(e) {
 		e.preventDefault();
+
+		history.push(`/search-recipes?${serialize({ ...advancedSearchOptions, q: searchQuery })}`); //add query Parameters to URL upon search
 		setSearching(true);
 	}
 
@@ -71,6 +114,11 @@ function SearchBar(props) {
 	}
 
 	//Everytime a Ranged min/max value updates, update the respective text
+	const thisArray = [
+		...Object.keys(rangeItems).map((key) => rangeItems[key].min),
+		...Object.keys(rangeItems).map((key) => rangeItems[key].max)
+	];
+	console.log(1, thisArray);
 	useEffect(
 		() => {
 			for (const [ key, value ] of Object.entries(rangeItems)) {
@@ -94,10 +142,7 @@ function SearchBar(props) {
 			}
 		},
 		// [ rangeItems.calories.min, rangeItems.calories.max, rangeItems.time.min, rangeItems.time.max ] //hard coded version
-		[
-			...Object.keys(rangeItems).map((key) => rangeItems[key].min),
-			...Object.keys(rangeItems).map((key) => rangeItems[key].max),
-		]
+		thisArray
 	);
 
 	//Update advancedSearchOptions when text in a Ranged Filter updates
