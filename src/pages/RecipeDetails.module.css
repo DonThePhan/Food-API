@@ -1,0 +1,92 @@
+.imgContainer {
+    position: relative;
+    min-width: 500px;
+    max-width: 500px;
+	height: 500px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: transparent;
+    transition: .5s;
+}
+
+.imgContainer h1 {
+    text-align: center;
+    z-index: 10;
+}
+
+.imgContainer:hover {
+    color: white;
+    text-shadow: 5px 5px 5px black;
+}
+
+
+img {
+    position: absolute;
+	border-radius: 10px;
+	width: 100%;
+	height: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+
+.itemListView {
+    margin-top: 50px;
+    display: flex;
+	flex-direction: row;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.list h2 {
+    padding-left: 30px;
+}
+
+.infoAndIngredients {
+    display: flex;
+    flex-direction: row;
+    padding: 0 30px;
+}
+.ingredients {
+    width: 400px;
+}
+
+.ingredients p {
+    margin-left: 20px;
+}
+
+.info {
+	margin-left: 50px;
+}
+
+.info h3, .ingredients h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.ingredientTitle {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+.ingredientTitle p {
+    margin: 0 20px;
+    color: grey;
+}
+
+a {
+    text-decoration: none;
+}
+
+.infoCategory {
+    display: flex;
+    flex-direction: row;
+}
+
+.label {
+    width: 150px;
+}

@@ -5,8 +5,6 @@ import classes from './RecipesList.module.css';
 import SearchContext from '../../store/search-context';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
-const apiId = '98943836';
-const apiKey = '0e65bcc0fbbd3f66f8c4e203e2e72310';
 const baseURL = 'https://api.edamam.com/api/recipes/v2';
 
 function RecipesList() {
@@ -25,13 +23,12 @@ function RecipesList() {
 		async () => {
 			const preParams = {
 				type: 'public',
-				app_id: apiId,
-				app_key: apiKey,
+				app_id: process.env.REACT_APP_API_ID,
+				app_key: process.env.REACT_APP_API_KEY,
 				q: searchQuery
 			};
 
 			Object.assign(preParams, advancedSearchOptions);
-			console.log(preParams);
 
 			const params = new URLSearchParams(preParams);
 
@@ -40,7 +37,7 @@ function RecipesList() {
 
 				const data = await response.json();
 				setSearchRecipeResults(data.hits);
-				console.log(data.hits);
+				// console.log(data.hits);
 			} catch (err) {
 				console.log(err.message);
 			}
@@ -73,7 +70,7 @@ function RecipesList() {
 							<RecipesListItem
 								className={classes.recipe}
 								recipe={recipe.recipe}
-								recipeId={recipe._links.self.href.replace(`${baseURL}/`, '').split('?')[0]}
+								recipeId={recipe._links.self.href.replace(`${baseURL}/`, '').split('?')[0]} //recipe id from API
 								key={index}
 							/>
 						))}

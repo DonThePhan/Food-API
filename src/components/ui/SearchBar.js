@@ -114,11 +114,11 @@ function SearchBar(props) {
 	}
 
 	//Everytime a Ranged min/max value updates, update the respective text
-	const thisArray = [
+	const rangedItemUseEffectStates = [
 		...Object.keys(rangeItems).map((key) => rangeItems[key].min),
 		...Object.keys(rangeItems).map((key) => rangeItems[key].max)
 	];
-	console.log(1, thisArray);
+
 	useEffect(
 		() => {
 			for (const [ key, value ] of Object.entries(rangeItems)) {
@@ -142,7 +142,7 @@ function SearchBar(props) {
 			}
 		},
 		// [ rangeItems.calories.min, rangeItems.calories.max, rangeItems.time.min, rangeItems.time.max ] //hard coded version
-		thisArray
+		rangedItemUseEffectStates
 	);
 
 	//Update advancedSearchOptions when text in a Ranged Filter updates

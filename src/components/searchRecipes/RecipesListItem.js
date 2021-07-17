@@ -1,8 +1,8 @@
 import { Fragment, useContext } from 'react';
 import classes from './RecipesListItem.module.css';
 import SearchContext from '../../store/search-context';
-import { Route, Link } from 'react-router-dom';
-import Modal from '../ui/Modal';
+import {  Link } from 'react-router-dom';
+
 
 function RecipesListItem(props) {
 	const {
@@ -18,15 +18,9 @@ function RecipesListItem(props) {
 	} = props.recipe;
 	const { view } = useContext(SearchContext);
 
-	function imgClickHandler() {
-		console.log('clicked!');
-	}
-
 	return (
 		<Fragment>
-			<Route path={`/search-recipes/${props.recipeId}`} exact>
-				<Modal />
-			</Route>
+	
 			<div>
 				<div className={`${view === 'grid' ? classes.itemGridView : classes.itemListView} ${props.className}`}>
 					<Link to={`/search-recipes/${props.recipeId}`}>
