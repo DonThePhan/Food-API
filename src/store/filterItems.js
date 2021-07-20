@@ -77,7 +77,8 @@ const filterItems = {
 
 export const filterRangedItems = {
     calories: 'Calories',
-    time: 'Time (minutes)'
+    time: 'Time (minutes)',
+    sugar: "Sugar"
 }
 
 export default filterItems;

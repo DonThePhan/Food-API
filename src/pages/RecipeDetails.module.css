@@ -90,3 +90,13 @@ a {
 .label {
     width: 150px;
 }
+
+.labalSection {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.labalSection button h2 {
+    color: blue;
+}

@@ -29,15 +29,15 @@ function RecipesList() {
 			};
 
 			Object.assign(preParams, advancedSearchOptions);
-
-			const params = new URLSearchParams(preParams);
+            console.log(preParams)
+            const params = new URLSearchParams(preParams);
 
 			try {
 				const response = await fetch(`${baseURL}?${params.toString()}`);
 
 				const data = await response.json();
 				setSearchRecipeResults(data.hits);
-				// console.log(data.hits);
+				console.log(data.hits);
 			} catch (err) {
 				console.log(err.message);
 			}

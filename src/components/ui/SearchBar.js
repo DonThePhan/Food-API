@@ -30,14 +30,16 @@ function SearchBar(props) {
 	} = useContext(SearchContext);
 
 	const [ advancedSearchOn, setAdvancedSearchOn ] = useState(false);
-	const setInitialRangedItems = (filterRangedItems) => {
-		let initialRangeItems = { ...filterRangedItems };
-		Object.keys(initialRangeItems).forEach(function(key) {
-			initialRangeItems[key] = { min: false, max: false, text: false };
-		});
-		return initialRangeItems;
+	const setInitialRangedItems = () => {
+		let initialRangedItems = { ...filterRangedItems };
+
+		for (const key of Object.keys(initialRangedItems)) {
+			initialRangedItems[key] = { min: false, max: false, text: false };
+		}
+
+		return initialRangedItems;
 	};
-	const [ rangeItems, setRangeItems ] = useState(setInitialRangedItems(filterRangedItems));
+	const [ rangeItems, setRangeItems ] = useState(setInitialRangedItems());
 
 	//* ON LOAD, check query parameters & update seachQuery & advancedSearchOptions - START
 	const location = useLocation();
@@ -114,35 +116,29 @@ function SearchBar(props) {
 	}
 
 	//Everytime a Ranged min/max value updates, update the respective text
-	const rangedItemUseEffectStates = [
-		...Object.keys(rangeItems).map((key) => rangeItems[key].min),
-		...Object.keys(rangeItems).map((key) => rangeItems[key].max)
-	];
-
 	useEffect(
 		() => {
 			for (const [ key, value ] of Object.entries(rangeItems)) {
-				if (value.min && value.max) {
+				if (value.min && value.max && value.text !== `${value.min}-${value.max}`) {
 					setRangeItems((prev) => {
 						return { ...prev, [key]: { ...value, text: `${value.min}-${value.max}` } };
 					});
-				} else if (value.min && !value.max) {
+				} else if (value.min && !value.max && value.text !== `${value.min}+`) {
 					setRangeItems((prev) => {
 						return { ...prev, [key]: { ...value, text: `${value.min}+` } };
 					});
-				} else if (!value.min && value.max) {
+				} else if (!value.min && value.max && value.text !== `0-${value.max}`) {
 					setRangeItems((prev) => {
 						return { ...prev, [key]: { ...value, text: `0-${value.max}` } };
 					});
-				} else if (!value.min && !value.max) {
+				} else if (!value.min && !value.max && value.text !== false) {
 					setRangeItems((prev) => {
 						return { ...prev, [key]: { ...value, text: false } };
 					});
 				}
 			}
 		},
-		// [ rangeItems.calories.min, rangeItems.calories.max, rangeItems.time.min, rangeItems.time.max ] //hard coded version
-		rangedItemUseEffectStates
+		[ rangeItems ]
 	);
 
 	//Update advancedSearchOptions when text in a Ranged Filter updates
@@ -170,10 +166,7 @@ function SearchBar(props) {
 
 	function resetSearchOptions() {
 		setAdvancedSearchOptions({});
-		setRangeItems({
-			calories: { min: false, max: false, text: false },
-			time: { min: false, max: false, text: false }
-		});
+		setRangeItems(setInitialRangedItems());
 	}
 
 	return (
