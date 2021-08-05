@@ -1,0 +1,12 @@
+.gridLayout {
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+	justify-content: space-between;
+    animation: fadein1 1s;
+}
+
+/* .gridLayout::after {
+	content: "";
+	flex: auto;
+} */

@@ -46,7 +46,8 @@ form {
 
 .advancedSearch {
 	display: flex;
-	flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 	animation: advancedSearchBarFadeIn .5s;
 }
 
@@ -61,6 +62,11 @@ form {
 	}
 }
 
+.rangeItems{
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 .categoryWrapper {
 	display: flex;
 	flex-direction: column;
@@ -70,5 +76,12 @@ form {
 .categoryWrapper label {
     font-size: .85rem;
     font-weight: 300;
+    margin-left: 6px;
+}
+
+.select {
+    margin: 5px;
+    width: 150px;
+    z-index: 10;
 }
 

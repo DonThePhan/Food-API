@@ -23,7 +23,7 @@ export function SearchProvider(props) {
 	const [ searchQuery, setSearchQuery ] = useState('');
 	const [ searching, setSearching ] = useState(false);
 	const [ view, setView ] = useState('grid');
-    const [advancedSearchOptions, setAdvancedSearchOptions] = useState();
+    const [advancedSearchOptions, setAdvancedSearchOptions] = useState({});
     const [savedRecipes, setSavedRecipes] = useState([])
 
 	return (

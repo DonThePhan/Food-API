@@ -8,7 +8,7 @@ import AuthContext from '../store/auth-context';
 function RecipeDetails() {
 	const recipeId = useParams().recipeId;
 
-	const { email } = useContext(AuthContext);
+	const { email, isLoggedIn } = useContext(AuthContext);
 	const {
 		searching,
 		setSearching,
@@ -67,24 +67,49 @@ function RecipeDetails() {
     const checkDB = async()=> {
         const response = await fetch(`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`)
         const data = await response.json()
-        // console.log(data)
+        return data
     }
-    function addRecipeHandler() {
-        const recipeData = checkDB()
-        if (!recipeData) {
+    const addRecipeHandler = async() => {
+        const recipeData = await checkDB()
+        if (!email || !isLoggedIn) {
+              alert('To Save a recipe, please sign up and log in!')
+        }
+        else if (!recipeData) {
             newSaveToDB();
+            alert('Recipe saved!')
+        }
+        else if (recipeData.favouritedAccounts.includes(email)) {
+            alert('You already have this recipe saved!')
+        } else {
+            updateDB(recipeData.favouritedAccounts)
+            alert('Recipe saved!')
         }
 	}
 
-    //PATCH request
 	const newSaveToDB = async () => {
-		// console.log(1, searchRecipeResults, label);
-
 		const dbRecipe = { ...searchRecipeResults, favouritedAccounts:[email], id: recipeId };
 		try {
 			const response = await fetch('https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes.json', {
 				method: 'PATCH',
 				body: JSON.stringify({ [recipeId]: dbRecipe }),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			const data = await response.json();
+
+			console.log(data);
+		} catch (e) {
+			console.log(e.message);
+		}
+	};
+
+    const updateDB = async (favouritedAccounts) => {
+        console.log('here12');
+		try {
+			const response = await fetch(`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`, {
+				method: 'PATCH',
+				body: JSON.stringify({ favouritedAccounts:[email,...favouritedAccounts] }),
 				headers: {
 					'Content-Type': 'application/json'
 				}

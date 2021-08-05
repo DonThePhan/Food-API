@@ -1,0 +1,10 @@
+.sliderContainer {
+    margin: 0 30px;
+}
+
+.label {
+    font-size: .85rem;
+    font-weight: 300;
+    /* margin: auto auto 100px 6px; */
+    /* text-align: center; */
+}

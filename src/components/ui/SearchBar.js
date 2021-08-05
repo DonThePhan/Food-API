@@ -1,10 +1,12 @@
 import classes from './SearchBar.module.css';
-import { Fragment, useContext, useState, useEffect } from 'react';
+import { Fragment, useContext, useState, useEffect, useCallback } from 'react';
 import SearchContext from '../../store/search-context';
-import Selector from './Selector';
-import RangeSelector from './RangeSelector';
 import _ from 'lodash';
 import { useLocation, useHistory } from 'react-router-dom';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+
+import SliderFilter from './SliderFilter';
 
 const serialize = function(obj) {
 	var str = [];
@@ -29,17 +31,15 @@ function SearchBar(props) {
 		filterRangedItems
 	} = useContext(SearchContext);
 
+	const selectorItems = Object.keys(filterItems).map((key) => {
+		return {
+			[key]: filterItems[key].map((value) => {
+				return { value: value, label: value };
+			})
+		};
+	});
+
 	const [ advancedSearchOn, setAdvancedSearchOn ] = useState(false);
-	const setInitialRangedItems = () => {
-		let initialRangedItems = { ...filterRangedItems };
-
-		for (const key of Object.keys(initialRangedItems)) {
-			initialRangedItems[key] = { min: false, max: false, text: false };
-		}
-
-		return initialRangedItems;
-	};
-	const [ rangeItems, setRangeItems ] = useState(setInitialRangedItems());
 
 	//* ON LOAD, check query parameters & update seachQuery & advancedSearchOptions - START
 	const location = useLocation();
@@ -66,6 +66,7 @@ function SearchBar(props) {
 	);
 	//! ON LOAD, check query parameters & update seachQuery & advancedSearchOptions - END
 
+	//begin search upon submit & updated query params in URL to match
 	const history = useHistory();
 	function submitHandler(e) {
 		e.preventDefault();
@@ -87,86 +88,76 @@ function SearchBar(props) {
 		});
 	}
 
-	function advancedOptHandler(e) {
-		if (e.target.value === 'none') {
+	function advancedOptHandler(e, category) {
+		if (!e) {
 			setAdvancedSearchOptions((prev) => {
 				const newValue = { ...prev };
-				delete newValue[_.camelCase(e.target.name)];
+				delete newValue[_.camelCase(category)];
 				return newValue;
 			});
 		} else {
 			setAdvancedSearchOptions((prev) => {
-				return { ...prev, [_.camelCase(e.target.name)]: e.target.value };
+				return { ...prev, [_.camelCase(category)]: e.value };
 			});
 		}
 	}
 
 	//* RANGED FILTERS - START ----------------------------------------------------------------------
+	const [ rangedFilters, setRangedFilters ] = useState(
+		filterRangedItems.map((categoryObj) => {
+			return { [categoryObj.category]: categoryObj.range };
+		})
+	); //i.e. [{time: [0,300]},{calories: [0,5000]}]
+	const [ selRangeCat, setSelRanCat ] = useState(null);
 
-	function rangeItemChange(e, category) {
-		if (e.target.name === 'min') {
-			setRangeItems((prev) => {
-				return { ...prev, [category]: { ...prev[category], min: e.target.value } };
-			});
-		} else {
-			setRangeItems((prev) => {
-				return { ...prev, [category]: { ...prev[category], max: e.target.value } };
-			});
-		}
-	}
-
-	//Everytime a Ranged min/max value updates, update the respective text
 	useEffect(
 		() => {
-			for (const [ key, value ] of Object.entries(rangeItems)) {
-				if (value.min && value.max && value.text !== `${value.min}-${value.max}`) {
-					setRangeItems((prev) => {
-						return { ...prev, [key]: { ...value, text: `${value.min}-${value.max}` } };
-					});
-				} else if (value.min && !value.max && value.text !== `${value.min}+`) {
-					setRangeItems((prev) => {
-						return { ...prev, [key]: { ...value, text: `${value.min}+` } };
-					});
-				} else if (!value.min && value.max && value.text !== `0-${value.max}`) {
-					setRangeItems((prev) => {
-						return { ...prev, [key]: { ...value, text: `0-${value.max}` } };
-					});
-				} else if (!value.min && !value.max && value.text !== false) {
-					setRangeItems((prev) => {
-						return { ...prev, [key]: { ...value, text: false } };
-					});
-				}
-			}
-		},
-		[ rangeItems ]
-	);
+			if (selRangeCat) {
+				const selRange = rangedFilters.find((categoryObj) => selRangeCat in categoryObj)[selRangeCat];
+				const selBaseRange = filterRangedItems.find((catObj) => catObj.category === selRangeCat).range;
 
-	//Update advancedSearchOptions when text in a Ranged Filter updates
-	useEffect(
-		() => {
-			for (const [ key, value ] of Object.entries(rangeItems)) {
-				if (value.text) {
-					setAdvancedSearchOptions((prev) => {
-						return { ...prev, [key]: value.text };
-					});
-				} else {
-					setAdvancedSearchOptions((prev) => {
+				setAdvancedSearchOptions((prev) => {
+					if (selRange[0] === selBaseRange[0] && selRange[1] === selBaseRange[1]) {
+						//* min range 0, range max range hit -> delete parameter
+
 						const newValue = { ...prev };
-						delete newValue[key];
+						delete newValue[_.camelCase(selRangeCat)];
+						console.log(newValue);
 						return newValue;
-					});
-				}
+					} else if (selRange[1] === selBaseRange[1]) {
+						//* min range & max range=max -> 'minRange+'
+
+						if (prev && selRangeCat in prev && prev[selRangeCat] === `${selRange[0]}+`) return prev;
+						console.log(`${selRange[0]}+`);
+						return { ...prev, [selRangeCat]: `${selRange[0]}+` };
+					} else if (selRange[0] === selBaseRange[0]) {
+						//* min range=min & max range -> 'maxRange'
+
+						if (prev && selRangeCat in prev && prev[selRangeCat] === `${selRange[1]}`) return prev;
+						console.log(`${selRange[1]}`);
+						return { ...prev, [selRangeCat]: `${selRange[1]}` };
+					} else {
+						//* min range & max range -> 'minRange-maxRange'
+
+						if (prev && selRangeCat in prev && prev[selRangeCat] === `${selRange[0]}-${selRange[1]}`)
+							return prev;
+						console.log(`${selRange[0]}-${selRange[1]}`);
+						return { ...prev, [selRangeCat]: `${selRange[0]}-${selRange[1]}` };
+					}
+				});
 			}
 		},
-		// [rangeItems.calories.text, rangeItems.time.text, setAdvancedSearchOptions] //hard coded version
-		[ ...Object.keys(rangeItems).map((key) => rangeItems[key].text), setAdvancedSearchOptions ]
+		[ selRangeCat, rangedFilters, filterRangedItems, setAdvancedSearchOptions ]
 	);
-
 	//* RANGED FILTERS - END ----------------------------------------------------------------------
 
 	function resetSearchOptions() {
 		setAdvancedSearchOptions({});
-		setRangeItems(setInitialRangedItems());
+		setRangedFilters(
+			filterRangedItems.map((categoryObj) => {
+				return { [categoryObj.category]: categoryObj.range };
+			})
+		);
 	}
 
 	return (
@@ -197,35 +188,44 @@ function SearchBar(props) {
 					</div>
 				</div>
 				<button onClick={toogleAdvancedSearch} className={classes.filter}>
-					Filter {!advancedSearchOn ? <i className="fas fa-caret-down" /> : <i className="fas fa-caret-up" />}
+					{!advancedSearchOn ? 'Filter ' : 'Reset Filter '}
+					{!advancedSearchOn ? <i className="fas fa-caret-down" /> : <i className="fas fa-caret-up" />}
 				</button>
 				{advancedSearchOn && (
 					<div className={classes.advancedSearch}>
-						<button onClick={resetSearchOptions}>reset filter</button>
-						{Object.keys(filterItems).map(function(key) {
-							return (
-								<Selector
-									className={classes.categoryWrapper}
-									key={key}
-									keyValue={key}
-									values={filterItems[key]}
-									advancedOptHandler={advancedOptHandler}
-								/>
-							);
+						{selectorItems.map((categoryObj) => {
+							return Object.keys(categoryObj).map((key) => {
+								return (
+									<div key={key} className={classes.categoryWrapper}>
+										<label htmlFor="">{_.startCase(key)}</label>
+										<Select
+											className={classes.select}
+											options={categoryObj[key]}
+											placeholder="Select..."
+											onChange={(e) => advancedOptHandler(e, key)}
+											isClearable
+										/>
+									</div>
+								);
+							});
 						})}
-						{Object.keys(filterRangedItems).map(function(key) {
-							return (
-								<RangeSelector
-									className={classes.categoryWrapper}
-									key={key}
-									name={key}
-									label={filterRangedItems[key]}
-									min={rangeItems[key].min}
-									max={rangeItems[key].max}
-									rangeItemChange={rangeItemChange}
-								/>
-							);
-						})}
+						<div className={classes.rangeItems}>
+							{filterRangedItems.map((categoryObj) => {
+								return (
+									<SliderFilter
+										key={categoryObj.category}
+										info={categoryObj}
+										currentRange={
+											rangedFilters.find((obj) => {
+												return categoryObj.category in obj;
+											})[categoryObj.category]
+										}
+										setRangedFilters={setRangedFilters}
+										setSelRanCat={setSelRanCat}
+									/>
+								);
+							})}
+						</div>
 					</div>
 				)}
 			</div>
