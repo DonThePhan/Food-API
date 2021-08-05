@@ -5,6 +5,8 @@ import {  Link } from 'react-router-dom';
 
 
 function RecipesListItem(props) {
+    // console.log(1)
+    // console.log(props.recipe)
 	const {
 		url,
 		dietLabels,

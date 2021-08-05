@@ -1,0 +1,20 @@
+.profile {
+  margin: 3rem auto;
+  text-align: center;
+}
+
+.profile h1 {
+  font-size: 5rem;
+}
+
+.gridView {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    animation: fadein1 1s;
+}
+
+.recipe {
+    margin: 20px;
+}

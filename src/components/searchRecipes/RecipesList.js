@@ -4,8 +4,19 @@ import { Fragment } from 'react';
 import classes from './RecipesList.module.css';
 import SearchContext from '../../store/search-context';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import GridLayout from '../ui/GridLayout';
+import { divide } from 'lodash';
 
 const baseURL = 'https://api.edamam.com/api/recipes/v2';
+
+function Viewer(props) {
+	const { view } = useContext(SearchContext);
+	let content = <GridLayout GridLayout> {props.children}</GridLayout>;
+	if (view !== 'grid') {
+		content = <div className={classes.listView}>{props.children}</div>;
+	}
+	return content;
+}
 
 function RecipesList() {
 	const {
@@ -29,7 +40,7 @@ function RecipesList() {
 			};
 
 			Object.assign(preParams, advancedSearchOptions);
-
+			console.log(preParams);
 			const params = new URLSearchParams(preParams);
 
 			try {
@@ -57,25 +68,26 @@ function RecipesList() {
 		[ searching, recipeSearch, setInitialSearch ]
 	);
 
+	const Content = (
+		<Viewer>
+			{searchRecipeResults &&
+				searchRecipeResults.length > 0 &&
+				!searching &&
+				searchRecipeResults.map((recipe, index) => (
+					<RecipesListItem
+						className={classes.recipe}
+						recipe={recipe.recipe}
+						recipeId={recipe._links.self.href.replace(`${baseURL}/`, '').split('?')[0]} //recipe id from API
+						key={index}
+					/>
+				))}
+		</Viewer>
+	);
+
 	return (
 		<Fragment>
 			{searching && <LoadingSpinner />}
-			{!searching &&
-			initialSearch && (
-				<div className={`${classes.recipes} ${view === 'grid' ? classes.gridView : classes.listView}`}>
-					{searchRecipeResults &&
-						searchRecipeResults.length > 0 &&
-						!searching &&
-						searchRecipeResults.map((recipe, index) => (
-							<RecipesListItem
-								className={classes.recipe}
-								recipe={recipe.recipe}
-								recipeId={recipe._links.self.href.replace(`${baseURL}/`, '').split('?')[0]} //recipe id from API
-								key={index}
-							/>
-						))}
-				</div>
-			)}
+			{!searching && initialSearch && Content}
 			{searchRecipeResults &&
 			searchRecipeResults.length === 0 &&
 			initialSearch &&

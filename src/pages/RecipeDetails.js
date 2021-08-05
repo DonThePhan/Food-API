@@ -3,19 +3,29 @@ import { useContext, useCallback, useEffect, Fragment } from 'react';
 import SearchContext from '../store/search-context';
 import classes from './RecipeDetails.module.css';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import AuthContext from '../store/auth-context';
 
 function RecipeDetails() {
 	const recipeId = useParams().recipeId;
-	const { searching, setSearching, searchRecipeResults, setSearchRecipeResults } = useContext(SearchContext);
+
+	const { email, isLoggedIn } = useContext(AuthContext);
+	const {
+		searching,
+		setSearching,
+		searchRecipeResults,
+		setSearchRecipeResults,
+		// savedRecipes,
+		// setSavedRecipes
+	} = useContext(SearchContext);
 
 	const {
 		calories,
 		cautions,
 		cuisineType,
 		dietLabels,
-		digest,
+		// digest,
 		dishType,
-		healthLabels,
+		// healthLabels,
 		image,
 		ingredientLines,
 		label,
@@ -46,13 +56,71 @@ function RecipeDetails() {
 
 			setSearching(false);
 		},
-		[ setSearching ]
+		[ setSearching, recipeId, setSearchRecipeResults ]
 	);
 
 	useEffect(() => {
 		setSearching(true);
 		recipeSearch();
-	}, []);
+	}, [recipeSearch,setSearching]);
+
+    const checkDB = async()=> {
+        const response = await fetch(`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`)
+        const data = await response.json()
+        return data
+    }
+    const addRecipeHandler = async() => {
+        const recipeData = await checkDB()
+        if (!email || !isLoggedIn) {
+              alert('To Save a recipe, please sign up and log in!')
+        }
+        else if (!recipeData) {
+            newSaveToDB();
+            alert('Recipe saved!')
+        }
+        else if (recipeData.favouritedAccounts.includes(email)) {
+            alert('You already have this recipe saved!')
+        } else {
+            updateDB(recipeData.favouritedAccounts)
+            alert('Recipe saved!')
+        }
+	}
+
+	const newSaveToDB = async () => {
+		const dbRecipe = { ...searchRecipeResults, favouritedAccounts:[email], id: recipeId };
+		try {
+			const response = await fetch('https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes.json', {
+				method: 'PATCH',
+				body: JSON.stringify({ [recipeId]: dbRecipe }),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			const data = await response.json();
+
+			console.log(data);
+		} catch (e) {
+			console.log(e.message);
+		}
+	};
+
+    const updateDB = async (favouritedAccounts) => {
+        console.log('here12');
+		try {
+			const response = await fetch(`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`, {
+				method: 'PATCH',
+				body: JSON.stringify({ favouritedAccounts:[email,...favouritedAccounts] }),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			const data = await response.json();
+
+			console.log(data);
+		} catch (e) {
+			console.log(e.message);
+		}
+	};
 
 	return (
 		<Fragment>
@@ -64,7 +132,13 @@ function RecipeDetails() {
 					</div>
 
 					<div className={classes.list}>
-						<h2>{label}</h2>
+						<div className={classes.labalSection}>
+							<h2>{label}</h2>
+							<button onClick={addRecipeHandler}>
+								<h2>Save Recipe!</h2>
+							</button>
+						</div>
+
 						<div className={classes.infoAndIngredients}>
 							<div className={classes.ingredients}>
 								<div className={classes.ingredientTitle}>

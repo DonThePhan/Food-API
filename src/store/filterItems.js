@@ -1,7 +1,6 @@
 const filterItems = {
-	diet: [ 'none', 'balanced', 'high-fiber', 'high-protein', 'low-carb', 'low-fat', 'low-sodium' ],
+	diet: [ 'balanced', 'high-fiber', 'high-protein', 'low-carb', 'low-fat', 'low-sodium' ],
 	health: [
-		'none',
 		'alcohol-free',
 		'celery-free',
 		'crustacean-free',
@@ -33,7 +32,6 @@ const filterItems = {
 		'wheat-free'
 	],
 	'cuisine type': [
-		'none',
 		'American',
 		'Asian',
 		'British',
@@ -53,9 +51,8 @@ const filterItems = {
 		'South American',
 		'South East Asian'
 	],
-	'meal type': [ 'none', 'Breakfast', 'Dinner', 'Lunch', 'Snack', 'Teatime' ],
+	'meal type': [ 'Breakfast', 'Dinner', 'Lunch', 'Snack', 'Teatime' ],
 	'dish type': [
-		'none',
 		'Biscuits and cookies',
 		'Bread',
 		'Cereals',
@@ -75,9 +72,14 @@ const filterItems = {
 	]
 };
 
-export const filterRangedItems = {
-    calories: 'Calories',
-    time: 'Time (minutes)'
-}
+// export const filterRangedItems = {
+// 	calories: 'Calories',
+// 	time: 'Time (minutes)',
+// 	sugar: 'Sugar'
+// };
+export const filterRangedItems = [
+	{ category: 'calories', label: 'Calories', range: [ 0, 5000 ] },
+	{ category: 'time', label: 'Time (minutes)', range: [ 0, 300 ] }
+];
 
 export default filterItems;

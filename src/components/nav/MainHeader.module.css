@@ -2,12 +2,13 @@ header {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	background: #d54c4c;
+	background: #FF0000;
     align-items: baseline;
 }
 
 .logo {
     margin-left: 20%;
+    color: white;
 }
 .nav {
     margin-right: 20%;
@@ -20,6 +21,7 @@ ul {
 }
 
 ul a {
+    color: white;
     margin: 5px 20px;
     text-decoration: none;
 }
