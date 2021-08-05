@@ -23,7 +23,8 @@ const UserProfile = () => {
 
 				const favouritedAccountRecipes = [];
 
-				for (const value of Object.values(loadedRecipes)) {
+                for (const value of Object.values(loadedRecipes)) {
+                    console.log(value.favouritedAccounts);
 					if (value.favouritedAccounts.includes(email)) {
 						favouritedAccountRecipes.push(value);
 					}
