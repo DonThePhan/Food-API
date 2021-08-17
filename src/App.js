@@ -9,7 +9,7 @@ import RecipeDetails from './pages/RecipeDetails';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import AuthContext from './store/auth-context';
-import ApiTester from './pages/ApiTester';
+
 
 function App() {
 	const { isLoggedIn } = useContext(AuthContext);
@@ -19,9 +19,7 @@ function App() {
 			<MainHeader />
 			<Layout>
 				<Switch>
-					<Route path='/test'>
-						<ApiTester />
-					</Route>
+
 					<Route path={`/search-recipes/:recipeId`} exact>
 						<RecipeDetails />
 					</Route>

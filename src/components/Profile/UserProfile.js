@@ -16,7 +16,7 @@ const UserProfile = () => {
 		async () => {
 			setSearching(true);
 			try {
-				const response = await fetch('https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes.json');
+				const response = await fetch(`${process.env.REACT_APP_FIREBASE_BASE_URL}/saved-recipes.json`);
 				const loadedRecipes = await response.json();
 				console.log(loadedRecipes);
 				console.log(email);

@@ -39,9 +39,9 @@ function RecipeDetails() {
 	} = searchRecipeResults;
 
 	// Proxy to bypass CORS blocking policy - see link for details -> https://stackoverflow.com/questions/43871637/no-access-control-allow-origin-header-is-present-on-the-requested-resource-whe
-    const proxy = process.env.REACT_APP_PROXY
-    const edamamRecipeBaseURL = `https://api.edamam.com/api/recipes/v2`
-    const baseURL = `${proxy}${edamamRecipeBaseURL}`;
+	const proxy = process.env.REACT_APP_PROXY;
+	const edamamRecipeBaseURL = `https://api.edamam.com/api/recipes/v2`;
+	const baseURL = `${proxy}${edamamRecipeBaseURL}`;
 
 	const recipeSearch = useCallback(
 		async () => {
@@ -68,9 +68,7 @@ function RecipeDetails() {
 
 	const checkDB = useCallback(
 		async () => {
-			const response = await fetch(
-				`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`
-			);
+			const response = await fetch(`${process.env.REACT_APP_FIREBASE_BASE_URL}/saved-recipes/${recipeId}.json`);
 			const data = await response.json();
 			return data;
 		},
