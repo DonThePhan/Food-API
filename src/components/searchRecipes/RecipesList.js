@@ -5,9 +5,12 @@ import classes from './RecipesList.module.css';
 import SearchContext from '../../store/search-context';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import GridLayout from '../ui/GridLayout';
-import { divide } from 'lodash';
 
-const baseURL = 'https://api.edamam.com/api/recipes/v2';
+
+// Proxy to bypass CORS blocking policy - see link for details -> https://stackoverflow.com/questions/43871637/no-access-control-allow-origin-header-is-present-on-the-requested-resource-whe
+const proxy = process.env.REACT_APP_PROXY
+const edamamRecipeBaseURL = `https://api.edamam.com/api/recipes/v2`
+const baseURL = `${proxy}${edamamRecipeBaseURL}`;
 
 function Viewer(props) {
 	const { view } = useContext(SearchContext);
@@ -77,7 +80,7 @@ function RecipesList() {
 					<RecipesListItem
 						className={classes.recipe}
 						recipe={recipe.recipe}
-						recipeId={recipe._links.self.href.replace(`${baseURL}/`, '').split('?')[0]} //recipe id from API
+						recipeId={recipe._links.self.href.replace(`${edamamRecipeBaseURL}/`, '').split('?')[0]} //recipe id from API
 						key={index}
 					/>
 				))}

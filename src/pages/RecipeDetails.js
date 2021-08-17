@@ -38,7 +38,10 @@ function RecipeDetails() {
 		url
 	} = searchRecipeResults;
 
-	const baseURL = 'https://api.edamam.com/api/recipes/v2';
+	// Proxy to bypass CORS blocking policy - see link for details -> https://stackoverflow.com/questions/43871637/no-access-control-allow-origin-header-is-present-on-the-requested-resource-whe
+    const proxy = process.env.REACT_APP_PROXY
+    const edamamRecipeBaseURL = `https://api.edamam.com/api/recipes/v2`
+    const baseURL = `${proxy}${edamamRecipeBaseURL}`;
 
 	const recipeSearch = useCallback(
 		async () => {
@@ -52,7 +55,7 @@ function RecipeDetails() {
 				const response = await fetch(`${baseURL}/${recipeId}?${params.toString()}`);
 
 				const data = await response.json();
-				console.log(data.recipe);
+				// console.log(data.recipe);
 				setSearchRecipeResults(data.recipe);
 			} catch (err) {
 				console.log(err.message);
@@ -108,13 +111,13 @@ function RecipeDetails() {
 			alert('To Save a recipe, please sign up and log in!');
 		} else if (!recipeData) {
 			newSaveToDB();
-            setFavourited(true)
+			setFavourited(true);
 			alert('Recipe saved!');
 		} else if (recipeData.favouritedAccounts.includes(email)) {
-            alert('You already have this recipe saved!');
-        } else {
+			alert('You already have this recipe saved!');
+		} else {
 			updateDbFavAccounts([ email, ...recipeData.favouritedAccounts ]);
-            setFavourited(true)
+			setFavourited(true);
 			alert('Recipe saved!');
 		}
 	};
@@ -122,8 +125,8 @@ function RecipeDetails() {
 	//assuming logged in w/ recipe already favourited
 	const removeRecipeHandler = async () => {
 		const recipeData = await checkDB();
-        updateDbFavAccounts(recipeData.favouritedAccounts.filter((account) => account !== email));
-        setFavourited(false)
+		updateDbFavAccounts(recipeData.favouritedAccounts.filter((account) => account !== email));
+		setFavourited(false);
 		alert('Recipe Removed!');
 	};
 
@@ -164,8 +167,8 @@ function RecipeDetails() {
 			} catch (e) {
 				console.log(e.message);
 			}
-        } else {
-            //if there are no other accounts favouriting this recipe, remove it completely from db
+		} else {
+			//if there are no other accounts favouriting this recipe, remove it completely from db
 			try {
 				const response = await fetch(
 					`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`,
