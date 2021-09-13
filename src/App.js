@@ -1,3 +1,11 @@
+/**
+ **Project Console: 
+ * https://console.firebase.google.com/project/food-api-f23bf/overview
+ * 
+ **Hosting URL: 
+ * https://food-api-f23bf.web.app
+ */
+
 import './App.css';
 import MainHeader from './components/nav/MainHeader';
 import Layout from './components/layout/Layout';
