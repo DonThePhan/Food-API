@@ -24,11 +24,11 @@ function MainHeader() {
 							Search Recipes
 						</NavLink>
 					</li>
-					<li>
+					{/* <li>
 						<NavLink to="/fooddb" activeClassName={classes.active}>
 							Food DB
 						</NavLink>
-					</li>
+					</li> */}
 					{!isLoggedIn && (
 						<li>
 							<NavLink to="/auth" activeClassName={classes.active}>

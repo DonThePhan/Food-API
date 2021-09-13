@@ -43,7 +43,7 @@ function RecipesList() {
 			};
 
 			Object.assign(preParams, advancedSearchOptions);
-			console.log(preParams);
+			// console.log(preParams);
 			const params = new URLSearchParams(preParams);
 
 			try {

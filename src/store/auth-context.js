@@ -69,7 +69,7 @@ export const AuthContextProvider = (props) => {
             });
             const data = await response.json();
             const retrievedEmail = data.users[0].email;
-            console.log(retrievedEmail);
+            // console.log(retrievedEmail);
             setEmail(retrievedEmail);
         },
         [token, API_KEY],

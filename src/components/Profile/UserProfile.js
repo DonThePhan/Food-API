@@ -18,13 +18,13 @@ const UserProfile = () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_FIREBASE_BASE_URL}/saved-recipes.json`);
 				const loadedRecipes = await response.json();
-				console.log(loadedRecipes);
-				console.log(email);
+				// console.log(loadedRecipes);
+				// console.log(email);
 
 				const favouritedAccountRecipes = [];
 
                 for (const value of Object.values(loadedRecipes)) {
-                    console.log(value.favouritedAccounts);
+                    // console.log(value.favouritedAccounts);
 					if (value.favouritedAccounts.includes(email)) {
 						favouritedAccountRecipes.push(value);
 					}
@@ -41,7 +41,7 @@ const UserProfile = () => {
 	useEffect(
 		() => {
 			if (email) {
-				console.log('email:', email);
+				// console.log('email:', email);
 				loadRecipes();
 			}
 		},

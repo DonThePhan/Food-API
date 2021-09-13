@@ -29,9 +29,9 @@ function App() {
 					<Route path="/search-recipes" exact>
 						<SearchRecipes />
 					</Route>
-					<Route path="/fooddb" exact>
+					{/* <Route path="/fooddb" exact>
 						<FoodDB />
-					</Route>
+					</Route> */}
 					{/**(7) method 1 - simply NO access*/ !isLoggedIn && (
 						<Route path="/auth">
 							<AuthPage />

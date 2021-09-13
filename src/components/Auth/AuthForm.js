@@ -70,7 +70,7 @@ const AuthForm = () => {
                 console.log(data);
 				console.log(data);
                 if (isLogin) {
-                    console.log(data.expiresIn);
+                    // console.log(data.expiresIn);
                     
                     const expirationTime = new Date(new Date().getTime() + (+data.expiresIn*1000 /**convert from s to ms */)) /**(9) */
 
