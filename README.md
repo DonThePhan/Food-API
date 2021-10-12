@@ -1,5 +1,8 @@
 # Food API App
 
+### APP LINK
+https://food-api-f23bf.firebaseapp.com/
+
 ### DEMO VIDEO
 https://user-images.githubusercontent.com/74743983/133166978-db47eda4-04c1-48b4-9714-924e4f95ed09.mp4
 
