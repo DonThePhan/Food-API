@@ -131,7 +131,7 @@ function RecipeDetails() {
 	const newSaveToDB = async () => {
 		const dbRecipe = { ...searchRecipeResults, favouritedAccounts: [ email ], id: recipeId };
 		try {
-			const response = await fetch('https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes.json', {
+			const response = await fetch(`${process.env.REACT_APP_FIREBASE_BASE_URL}/saved-recipes.json`, {
 				method: 'PATCH',
 				body: JSON.stringify({ [recipeId]: dbRecipe }),
 				headers: {
@@ -150,7 +150,7 @@ function RecipeDetails() {
 		if (favouritedAccounts.length > 0) {
 			try {
 				const response = await fetch(
-					`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`,
+					`${process.env.REACT_APP_FIREBASE_BASE_URL}/saved-recipes/${recipeId}.json`,
 					{
 						method: 'PATCH',
 						body: JSON.stringify({ favouritedAccounts: favouritedAccounts }),
@@ -169,7 +169,7 @@ function RecipeDetails() {
 			//if there are no other accounts favouriting this recipe, remove it completely from db
 			try {
 				const response = await fetch(
-					`https://food-api-f23bf-default-rtdb.firebaseio.com/saved-recipes/${recipeId}.json`,
+					`${process.env.REACT_APP_FIREBASE_BASE_URL}/saved-recipes/${recipeId}.json`,
 					{
 						method: 'DELETE',
 						headers: {
