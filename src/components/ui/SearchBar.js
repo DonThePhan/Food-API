@@ -4,7 +4,6 @@ import SearchContext from '../../store/search-context';
 import _ from 'lodash';
 import { useLocation, useHistory } from 'react-router-dom';
 import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
 
 import SliderFilter from './SliderFilter';
 
@@ -19,7 +18,9 @@ const serialize = function(obj) {
 
 function SearchBar(props) {
 	const { buttonText } = props;
-	const {
+    const {
+        initialLoad,
+        setInitialLoad,
 		setSearching,
 		searchQuery,
 		setSearchQuery,
@@ -40,6 +41,19 @@ function SearchBar(props) {
 	});
 
 	const [ advancedSearchOn, setAdvancedSearchOn ] = useState(false);
+
+    //* ON LOAD, do a default search for beef recipes
+	const url = useHistory();
+	useEffect(
+        () => {
+            console.log(initialLoad)
+			if (!initialLoad) {
+				url.push(`/search-recipes?q=beef`);
+				setInitialLoad(true);
+			} 
+		},
+		[ initialLoad ]
+	);
 
 	//* ON LOAD, check query parameters & update seachQuery & advancedSearchOptions - START
 	const location = useLocation();
@@ -173,7 +187,7 @@ function SearchBar(props) {
 								type="text"
 								value={searchQuery}
 							/>
-							<button type="submit">
+							<button id="submitButton" type="submit">
 								<i className="fas fa-search" />
 							</button>
 						</div>

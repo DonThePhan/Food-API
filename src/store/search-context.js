@@ -2,6 +2,8 @@ import { createContext, useState } from 'react';
 import filterItems, { filterRangedItems} from './filterItems';
 
 const SearchContext = createContext({
+    initialLoad: false,
+    setInitialLoad: () => { },
 	searchRecipeResults: [],
 	setSearchRecipeResults: () => {},
 	searchQuery: '',
@@ -19,6 +21,7 @@ const SearchContext = createContext({
 });
 
 export function SearchProvider(props) {
+    const [initialLoad, setInitialLoad] = useState(false)
 	const [ searchRecipeResults, setSearchRecipeResults ] = useState([]);
 	const [ searchQuery, setSearchQuery ] = useState('');
 	const [ searching, setSearching ] = useState(false);
@@ -28,7 +31,9 @@ export function SearchProvider(props) {
 
 	return (
 		<SearchContext.Provider
-			value={{
+            value={{
+                initialLoad,
+                setInitialLoad,
 				searchRecipeResults,
 				setSearchRecipeResults,
 				searchQuery,
