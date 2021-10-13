@@ -61,19 +61,26 @@ export const AuthContextProvider = (props) => {
 
 	const [ email, setEmail ] = useState(null); // return user email or ''
 	const getUserEmail = useCallback(
-        async () => {
-            const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${API_KEY}`, {
-                method: 'POST',
-                body: JSON.stringify({ idToken: token }),
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await response.json();
-            const retrievedEmail = data.users[0].email;
-            // console.log(retrievedEmail);
-            setEmail(retrievedEmail);
-        },
-        [token, API_KEY],
-    )
+		async () => {
+			try {
+				const response = await fetch(
+					`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${API_KEY}`,
+					{
+						method: 'POST',
+						body: JSON.stringify({ idToken: token }),
+						headers: { 'Content-Type': 'application/json' }
+					}
+				);
+				const data = await response.json();
+				const retrievedEmail = data.users[0].email;
+				// console.log(retrievedEmail);
+				setEmail(retrievedEmail);
+            } catch (error) {
+                console.log('no one is logged in')
+            }
+		},
+		[ token, API_KEY ]
+	);
 
 	useEffect(
 		() => {

@@ -6,10 +6,9 @@ import SearchContext from '../../store/search-context';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import GridLayout from '../ui/GridLayout';
 
-
 // Proxy to bypass CORS blocking policy - see link for details -> https://stackoverflow.com/questions/43871637/no-access-control-allow-origin-header-is-present-on-the-requested-resource-whe
-const proxy = process.env.REACT_APP_PROXY
-const edamamRecipeBaseURL = `https://api.edamam.com/api/recipes/v2`
+const proxy = process.env.REACT_APP_PROXY;
+const edamamRecipeBaseURL = `https://api.edamam.com/api/recipes/v2`;
 const baseURL = `${proxy}${edamamRecipeBaseURL}`;
 
 function Viewer(props) {
@@ -37,8 +36,8 @@ function RecipesList() {
 		async () => {
 			const preParams = {
 				type: 'public',
-				app_id: process.env.REACT_APP_API_ID,
-				app_key: process.env.REACT_APP_API_KEY,
+				app_id: process.env.REACT_APP_EDAMAN_API_ID,
+				app_key: process.env.REACT_APP_EDAMAN_API_KEY,
 				q: searchQuery
 			};
 
