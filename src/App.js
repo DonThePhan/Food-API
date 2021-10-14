@@ -1,9 +1,9 @@
 /**
  **Project Console: 
- * https://console.firebase.google.com/project/food-api-f23bf/overview
+ * https://console.firebase.google.com/project/food-api-f5240/overview
  * 
  **Hosting URL: 
- * https://food-api-f23bf.web.app
+ * https://food-api-f5240.web.app/
  */
 
 import './App.css';
